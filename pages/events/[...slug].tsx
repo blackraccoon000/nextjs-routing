@@ -1,13 +1,13 @@
 import { getFilteredEvents } from "../../dummy-data";
 import EventList from "../../components/events/EventList";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { Fragment } from "react";
 import ResultsTitle from "../../components/events/ResultsTitle";
 import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
 
-const FilteredEventPage = () => {
-  const router = useRouter();
+const FilteredEventPage = (): JSX.Element => {
+  const router: NextRouter = useRouter();
   const data = router.query.slug;
   if (!data) return <p className="center">Loading...</p>;
 

@@ -1,8 +1,12 @@
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import MainHeader from "./MainHeader";
 
-const Layout = ({ children }) => {
+type Props = {
+  children: React.ReactNode;
+};
+
+const Layout = ({ children }: Props): JSX.Element => {
   return (
     <Fragment>
       <MainHeader />
