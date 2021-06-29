@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { getEventById } from "../../dummy-data";
 import { Fragment } from "react";
 import EventSummary from "../../components/event-detail/EventSummary";
@@ -7,10 +7,10 @@ import EventContent from "../../components/event-detail/EventContent";
 import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
 
-const EventDetailPage = () => {
-  const router = useRouter();
+const EventDetailPage = (): JSX.Element => {
+  const router: NextRouter = useRouter();
   const eventId = router.query.eventId;
-  const event = getEventById(eventId);
+  const event = typeof eventId === "string" ? getEventById(eventId) : undefined;
 
   if (!event)
     return (

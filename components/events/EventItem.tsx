@@ -5,7 +5,21 @@ import DateIcon from "../icons/DateIcon";
 import AddressIcon from "../icons/AddressIcon";
 import ArrowRightIcon from "../icons/ArrowRightIcon";
 
-const EventItem = ({ id, title, location, date, image }) => {
+type Props = {
+  id: string;
+  title: string;
+  location: string;
+  date: string;
+  image: string;
+};
+
+const EventItem = ({
+  id,
+  title,
+  location,
+  date,
+  image,
+}: Props): JSX.Element => {
   const humanReadableDate = new Date(date).toLocaleDateString("ja-JP", {
     day: "numeric",
     month: "long",

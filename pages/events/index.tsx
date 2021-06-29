@@ -9,9 +9,12 @@ const AllEventPage = () => {
   const events = getAllEvents();
   const router = useRouter();
 
-  const findEventsHandler = (year, month) => {
+  const findEventsHandler = async (
+    year: string,
+    month: string
+  ): Promise<void> => {
     const fullPath = `/events/${year}/${month}`;
-    router.push(fullPath);
+    await router.push(fullPath);
   };
 
   return (

@@ -2,7 +2,9 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 import classes from "./Button.module.css";
 
-const Button = ({ children, link, onClick }) => {
+type Props = { children: React.ReactNode; link?: string; onClick?: () => void };
+
+const Button = ({ children, link, onClick }: Props) => {
   if (link) {
     return (
       <Link href={link}>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import classes from "./MainHeader.module.css";
 
-const MainHeader = () => {
+const MainHeader = (): JSX.Element => {
   return (
     <header className={classes.header}>
       <div className={classes.logo}>

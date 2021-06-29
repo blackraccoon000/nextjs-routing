@@ -4,7 +4,19 @@ import AddressIcon from "../icons/AddressIcon";
 import classes from "./EventLogistics.module.css";
 import PropTypes from "prop-types";
 
-function EventLogistics({ date, address, image, imageAlt }) {
+type Props = {
+  date: string;
+  address: string;
+  image: string;
+  imageAlt: string;
+};
+
+function EventLogistics({
+  date,
+  address,
+  image,
+  imageAlt,
+}: Props): JSX.Element {
   const humanReadableDate = new Date(date).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
