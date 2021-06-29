@@ -17,7 +17,7 @@ const ResultsTitle = ({ date }: { date: Date }) => {
 };
 
 ResultsTitle.propTypes = {
-  date: PropTypes.string,
+  date: PropTypes.object,
 };
 
 export default ResultsTitle;

@@ -1,8 +1,8 @@
 import EventItem from "./EventItem";
 import classes from "./EventList.module.css";
-import { DummyEvent } from "../../dummy-data";
+import { Event } from "../../helpers/apiUtile";
 
-type Props = { events: DummyEvent[] };
+type Props = { events: Event[] };
 
 const EventList = ({ events }: Props) => {
   return (
