@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { getFeaturedEvents } from "../helpers/apiUtile";
 import EventList from "../components/events/EventList";
 import { Event } from "../helpers/apiUtile";
@@ -9,6 +10,7 @@ type Props = {
 };
 
 const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
+  // noinspection HtmlUnknownTarget
   return (
     <div>
       <Head>
@@ -19,10 +21,23 @@ const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
         />
       </Head>
       <EventList events={featureEvents} />
+      <ul>
+        <li>
+          <Link href="/portfolio">
+            <a>Portfolio</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/clients">
+            <a>Clients</a>
+          </Link>
+        </li>
+      </ul>
     </div>
   );
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const featureEvents = await getFeaturedEvents();
   return {
@@ -33,4 +48,5 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   };
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default Homepage;

@@ -1,5 +1,6 @@
 import classes from "./EventItem.module.css";
 import PropTypes from "prop-types";
+import Image from "next/image";
 import Button from "../ui/Button";
 import DateIcon from "../icons/DateIcon";
 import AddressIcon from "../icons/AddressIcon";
@@ -32,7 +33,7 @@ const EventItem = ({
 
   return (
     <li className={classes.item}>
-      <img src={`/${image}`} alt={title} />
+      <Image src={`/${image}`} alt={title} width={250} height={160} />
       <div className={classes.content}>
         <div>
           <h2>{title}</h2>
