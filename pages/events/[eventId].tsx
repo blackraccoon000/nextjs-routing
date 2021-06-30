@@ -1,16 +1,12 @@
 import { GetStaticPaths, GetStaticProps } from "next";
+import Head from "next/head";
 import { Fragment } from "react";
 import EventSummary from "../../components/event-detail/EventSummary";
 import EventLogistics from "../../components/event-detail/EventLogistics";
 import EventContent from "../../components/event-detail/EventContent";
 import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
-import {
-  getEventById,
-  getAllEvents,
-  Event,
-  getFeaturedEvents,
-} from "../../helpers/apiUtile";
+import { getEventById, Event, getFeaturedEvents } from "../../helpers/apiUtile";
 
 type Props = {
   selectedEvent: Event | undefined;
@@ -33,6 +29,10 @@ const EventDetailPage = ({ selectedEvent }: Props): JSX.Element => {
 
   return (
     <Fragment>
+      <Head>
+        <title>{selectedEvent.title} </title>
+        <meta name={"description"} content={selectedEvent.description} />
+      </Head>
       <EventSummary title={selectedEvent.title} />
       <EventLogistics
         date={selectedEvent.date}
@@ -45,6 +45,7 @@ const EventDetailPage = ({ selectedEvent }: Props): JSX.Element => {
   );
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const eventId = params?.eventId;
   const selectedEvent =
@@ -57,6 +58,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   };
 };
 
+// noinspection JSUnusedGlobalSymbols
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
   const events = await getFeaturedEvents();
   const paths: { params: Params }[] = events.map((event) => ({
@@ -68,4 +70,5 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
   };
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default EventDetailPage;
