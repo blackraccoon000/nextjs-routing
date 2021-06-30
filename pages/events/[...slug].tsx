@@ -6,6 +6,7 @@ import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
 import { NextRouter, useRouter } from "next/router";
 import useSWR from "swr";
+import Head from "next/head";
 
 const FilteredEventPage = (): JSX.Element => {
   const [loadedEvents, setLoadedEvents] = useState<Event[]>();
@@ -49,9 +50,37 @@ const FilteredEventPage = (): JSX.Element => {
     12 < month ||
     error;
 
+  const LoadedData = () => (
+    <Head>
+      <title>{"Filtered Event Page"}</title>
+      <meta name={"description"} content={`A list of filtered events.`} />
+    </Head>
+  );
+
+  if (!loadedEvents)
+    return (
+      <Fragment>
+        <LoadedData />
+        <p className="center">Loading...</p>
+      </Fragment>
+    );
+
+  const HeadData = () => {
+    return (
+      <Head>
+        <title>{"Filtered Event Page"}</title>
+        <meta
+          name={"description"}
+          content={`All Events for ${year}/${month}.`}
+        />
+      </Head>
+    );
+  };
+
   if (check)
     return (
       <div className={"center"}>
+        <HeadData />
         <ErrorAlert>
           <p>Invalid Filter. Please adjust your values!</p>
         </ErrorAlert>
@@ -59,11 +88,10 @@ const FilteredEventPage = (): JSX.Element => {
       </div>
     );
 
-  if (!loadedEvents) return <p className="center">Loading...</p>;
-
   if (!filteredEvents || filteredEvents.length === 0)
     return (
       <div className={"center"}>
+        <HeadData />
         <ErrorAlert>
           <p>No Result Events</p>
         </ErrorAlert>
@@ -73,6 +101,7 @@ const FilteredEventPage = (): JSX.Element => {
 
   return (
     <Fragment>
+      <HeadData />
       <ResultsTitle date={date} />
       <EventList events={filteredEvents} />;
     </Fragment>

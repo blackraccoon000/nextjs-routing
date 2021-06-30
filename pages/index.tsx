@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { getFeaturedEvents } from "../helpers/apiUtile";
 import EventList from "../components/events/EventList";
 import { Event } from "../helpers/apiUtile";
@@ -10,6 +11,13 @@ type Props = {
 const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
   return (
     <div>
+      <Head>
+        <title>Next JS Generate</title>
+        <meta
+          name={"description"}
+          content={"Find a lot of great events that allow you to evolve..."}
+        />
+      </Head>
       <EventList events={featureEvents} />
     </div>
   );
