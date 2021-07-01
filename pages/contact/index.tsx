@@ -1,13 +1,15 @@
-import { FormEventHandler, useRef, useState } from "react";
+import { FormEventHandler, MouseEventHandler, useRef, useState } from "react";
 
 const ContactPage = (): JSX.Element => {
   const initialState = {
     message: "",
-    feedback: {
-      id: "",
-      email: "",
-      feedback: "",
-    },
+    feedbacks: [
+      {
+        id: "",
+        email: "",
+        feedback: "",
+      },
+    ],
   };
   const [feedbackResult, setFeedbackResult] = useState(initialState);
   const emailInputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +37,13 @@ const ContactPage = (): JSX.Element => {
     setFeedbackResult(data);
   };
 
+  const loadFeedbackHandler: MouseEventHandler<HTMLButtonElement> =
+    async () => {
+      const response = await fetch("/api/feedback");
+      const data = await response.json();
+      setFeedbackResult(data);
+    };
+
   return (
     <div>
       <h1>The Contact Page</h1>
@@ -55,14 +64,19 @@ const ContactPage = (): JSX.Element => {
         </div>
         <button>Submit</button>
       </form>
+      <button onClick={loadFeedbackHandler}>Load Feedback</button>
       {feedbackResult.message !== "" && (
         <div>
           <h2>message:{feedbackResult.message}</h2>
-          <ul>
-            <li>id:{feedbackResult.feedback.id}</li>
-            <li>email:{feedbackResult.feedback.email}</li>
-            <li>feedback:{feedbackResult.feedback.feedback}</li>
-          </ul>
+          {feedbackResult.feedbacks.map((feedback) => {
+            return (
+              <ul key={feedback.id}>
+                <li>id:{feedback.id}</li>
+                <li>email:{feedback.email}</li>
+                <li>feedback:{feedback.feedback}</li>
+              </ul>
+            );
+          })}
         </div>
       )}
     </div>

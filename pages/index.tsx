@@ -10,7 +10,6 @@ type Props = {
 };
 
 const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
-  // noinspection HtmlUnknownTarget
   return (
     <div>
       <Head>
@@ -30,6 +29,21 @@ const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
         <li>
           <Link href="/clients">
             <a>Clients</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/api/feedback">
+            <a>API/Feedback</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/feedback">
+            <a>Feedback</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/contact">
+            <a>Contact</a>
           </Link>
         </li>
       </ul>
