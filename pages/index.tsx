@@ -32,6 +32,16 @@ const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
             <a>Clients</a>
           </Link>
         </li>
+        <li>
+          <Link href="/api/feedback">
+            <a>API/Feedback</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/contact">
+            <a>Contact</a>
+          </Link>
+        </li>
       </ul>
     </div>
   );
