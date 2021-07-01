@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
  * Feedbackタイプを指定している。
  * id,email,feedbackはそれぞれstring型
  */
-export type Feedback = {
+export type Index = {
   id: string;
   email: string;
   feedback: string;
@@ -14,32 +14,37 @@ export type Feedback = {
 
 /**
  * feedback.jsonというファイルの場所を明示するための関数。
- * Nodeで実行される。
- * 引数をファイル名などで設定しても良いかもしれない。
+ * Nodeで実行される。引数をファイル名などで設定しても良いかもしれない。
+ * @desc process.cwd() {@link https://nodejs.org/api/process.html#process_process_cwd}
  *
- * process.cwd() https://nodejs.org/api/process.html#process_process_cwd
- * このprocess.cwd()メソッドは、Node.jsプロセスの現在の作業ディレクトリを返します。
+ * @return filePath:string
+ *
  */
 export const buildFeedbackPath = (): string => {
   return path.join(process.cwd(), "data", "feedback.json");
 };
 
 /**
- * @param feedbackPath
- * 非同期関数でjson形式で格納された情報を読取ることができる。
+ * @param filePath
+ *
+ * @desc 非同期関数でjson形式で格納された情報を読取ることができる。
  * 引数はファイルの場所をstring形式で渡す。
  * buildFeedbackPathを直接入力することもできる。
  *
- * e.g. extractFeedback(buildFeedbackPath())
+ * @example
+ * const filePath = buildFeedbackPath()
+ * const data = extractFeedback(filePath)
+ * e.g.
+ * const data = extractFeedback(buildFeedbackPath())
+ *
+ * @return return JSON.parse(fileData)
  */
-export const extractFeedback = async (
-  feedbackPath: string
-): Promise<Feedback[]> => {
-  const fileData = await fs.readFile(feedbackPath, "utf8");
+export const extractFeedback = async (filePath: string): Promise<Index[]> => {
+  const fileData = await fs.readFile(filePath, "utf8");
   return JSON.parse(fileData);
 };
 
-const newFeedback = (email: string, feedback: string): Feedback => {
+const newFeedback = (email: string, feedback: string): Index => {
   return {
     id: new Date().toISOString(),
     email,
