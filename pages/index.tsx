@@ -4,6 +4,7 @@ import { getFeaturedEvents } from "../helpers/apiUtile";
 import EventList from "../components/events/EventList";
 import { Event } from "../helpers/apiUtile";
 import { GetStaticProps } from "next";
+import NewsletterRegistration from "../components/input/NewsLetterRegistration";
 
 type Props = {
   featureEvents: Event[];
@@ -19,6 +20,7 @@ const Homepage = ({ featureEvents }: { featureEvents: Event[] }) => {
           content={"Find a lot of great events that allow you to evolve..."}
         />
       </Head>
+      <NewsletterRegistration />
       <EventList events={featureEvents} />
       <ul>
         <li>
