@@ -1,16 +1,21 @@
-import { useRef, useState } from "react";
+import { FormEventHandler, useRef, useState } from "react";
 import classes from "./NewComment.module.css";
+import { CommentData } from "./Comments";
 
-// props:anyで一時しのぎ
-function NewComment(props: any) {
+type Props = {
+  onAddComment: (commentData: CommentData) => Promise<void>;
+};
+
+const NewComment = ({ onAddComment }: Props) => {
   const [isInvalid, setIsInvalid] = useState(false);
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // 未使用のため、event:any
-  function sendCommentHandler(event: any) {
+  const sendCommentHandler: FormEventHandler<HTMLFormElement> = async (
+    event
+  ): Promise<void> => {
     event.preventDefault();
 
     const enteredEmail = emailInputRef.current?.value;
@@ -30,15 +35,15 @@ function NewComment(props: any) {
       return;
     }
 
-    props.onAddComment({
+    await onAddComment({
       email: enteredEmail,
       name: enteredName,
       text: enteredComment,
     });
-  }
+  };
 
   return (
-    <form className={classes.form}>
+    <form className={classes.form} onSubmit={sendCommentHandler}>
       <div className={classes.row}>
         <div className={classes.control}>
           <label htmlFor="email">Your email</label>
@@ -57,6 +62,6 @@ function NewComment(props: any) {
       <button>Submit</button>
     </form>
   );
-}
+};
 
 export default NewComment;
