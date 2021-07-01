@@ -7,6 +7,7 @@ import EventContent from "../../components/event-detail/EventContent";
 import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
 import { getEventById, Event, getFeaturedEvents } from "../../helpers/apiUtile";
+import Comments from "../../components/input/Comments";
 
 type Props = {
   selectedEvent: Event | undefined;
@@ -40,7 +41,10 @@ const EventDetailPage = ({ selectedEvent }: Props): JSX.Element => {
         image={selectedEvent.image}
         imageAlt={selectedEvent.title}
       />
-      <EventContent>{selectedEvent.description}</EventContent>
+      <EventContent>
+        <p>{selectedEvent.description}</p>
+      </EventContent>
+      <Comments eventId={selectedEvent.id} />
     </Fragment>
   );
 };
