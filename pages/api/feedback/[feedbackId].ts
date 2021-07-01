@@ -1,6 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { buildFeedbackPath, extractFeedback, Index } from "./index";
 
+type Feedback = {
+  feedback: Index | undefined;
+};
+
+type Failed = {
+  message: string;
+};
+
 /**
  * feedback.jsonから該当のIDを見つけ、返す。
  * @param feedbackId
@@ -18,7 +26,10 @@ export const selectedFeedback = async (
   return feedbacksData.find((feedback) => feedback.id === feedbackId);
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Feedback | Failed>
+) => {
   if (typeof req.query.feedbackId === "string") {
     const resultFeedback = await selectedFeedback(req.query.feedbackId);
     res.status(200).json({ feedback: resultFeedback });
