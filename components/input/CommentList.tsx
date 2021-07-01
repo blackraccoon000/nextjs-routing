@@ -1,20 +1,20 @@
 import classes from "./CommentList.module.css";
+import { Output } from "../../pages/api/comments/[eventId]";
 
-const CommentList = (): JSX.Element => (
+const CommentList = ({ comments }: { comments: Output }): JSX.Element => (
   <ul className={classes.comments}>
     {/* Render list of comments - fetched from API */}
-    <li>
-      <p>My comment is amazing!</p>
-      <div>
-        By <address>Maximilian</address>
-      </div>
-    </li>
-    <li>
-      <p>My comment is amazing!</p>
-      <div>
-        By <address>Maximilian</address>
-      </div>
-    </li>
+    {comments &&
+      comments.map((comment) => {
+        return (
+          <li key={comment.id}>
+            <p>{comment.text}</p>
+            <div>
+              By <address>{comment.name}</address>
+            </div>
+          </li>
+        );
+      })}
   </ul>
 );
 
