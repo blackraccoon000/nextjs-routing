@@ -14,7 +14,7 @@ type Failed = {
 };
 
 export type Input = {
-  _id: string;
+  _id?: string;
   eventId: string;
   email: string;
   name: string;
@@ -57,13 +57,15 @@ const createComment = async (
   }
 
   const commentData: Input = {
-    _id: "",
     eventId,
     email,
     name,
     text,
   };
   const client = await connectDatabase();
+  /**
+   * commentDataにidが勝手に入ってしまうため、InputTypeがよくわからないことになる。
+   */
   await insertDocument(client, "comments", commentData);
   await client.close();
 

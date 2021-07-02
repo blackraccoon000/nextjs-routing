@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import CommentList from "./CommentList";
 import NewComment from "./NewComment";
 import classes from "./Comments.module.css";
 import { Output } from "../../pages/api/comments/[eventId]";
+import {
+  ntfCtxShowError,
+  ntfCtxShowPending,
+  ntfCtxShowSuccess,
+} from "../../helpers/ctxUtilites";
+import NotificationContext from "../../store/NotificationContext";
 
 export type CommentData = {
   email: string;
@@ -13,7 +19,9 @@ export type CommentData = {
 
 const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
   const [showComments, setShowComments] = useState(false);
+  const [reloadComments, setReloadComments] = useState(false);
   const [comments, setComments] = useState<Output | undefined>();
+  const notificationCtx = useContext(NotificationContext);
 
   useEffect(() => {
     if (showComments) {
@@ -23,9 +31,23 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
     }
   }, [showComments]);
 
+  useEffect(() => {
+    if (reloadComments) {
+      fetch(`/api/comments/${eventId}`)
+        .then((res) => res.json())
+        .then((data) => setComments(data.comments));
+    }
+    return () => {
+      setReloadComments(false);
+    };
+  }, [reloadComments]);
+
   const toggleCommentsHandler = () => {
     setShowComments((prevStatus) => !prevStatus);
     if (!showComments) {
+      /**
+       * ここってやりかけ？
+       */
     }
   };
 
@@ -34,6 +56,8 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
    * @param commentData
    */
   const addCommentHandler = async (commentData: CommentData): Promise<void> => {
+    ntfCtxShowPending(notificationCtx);
+    console.log(commentData);
     // send data to API
     const init: RequestInit = {
       method: "POST",
@@ -42,9 +66,22 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
         "Content-Type": "application/json",
       },
     };
-    const response = await fetch(`/api/comments/${eventId}`, init);
-    const data = await response.json();
-    console.log(data);
+    /**
+     * エラーメッセージなどは後で修正
+     */
+    try {
+      const response = await fetch(`/api/comments/${eventId}`, init);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data);
+      } else {
+        setReloadComments(true);
+        ntfCtxShowSuccess(notificationCtx);
+      }
+    } catch (e) {
+      console.error(e);
+      ntfCtxShowError(notificationCtx, e);
+    }
   };
 
   return (

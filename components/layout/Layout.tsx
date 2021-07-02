@@ -10,6 +10,7 @@ type Props = {
 
 const Layout = ({ children }: Props): JSX.Element => {
   const notificationCtx = useContext(NotificationContext);
+  // : { title: string; message: string; status: string }
   const activeNotification: any = notificationCtx.notification;
   return (
     <Fragment>

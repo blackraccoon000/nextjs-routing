@@ -1,6 +1,11 @@
 import classes from "./NewsLetterRegistration.module.css";
 import { FormEventHandler, useContext, useRef } from "react";
 import NotificationContext from "../../store/NotificationContext";
+import {
+  ntfCtxShowError,
+  ntfCtxShowPending,
+  ntfCtxShowSuccess,
+} from "../../helpers/ctxUtilites";
 
 const NewsletterRegistration = (): JSX.Element => {
   const emailInputRef = useRef<HTMLInputElement>(null);
@@ -12,11 +17,7 @@ const NewsletterRegistration = (): JSX.Element => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current?.value;
 
-    notificationCtx.showNotification({
-      title: "Signing up...",
-      message: "Registering for newsletter",
-      status: "pending",
-    });
+    ntfCtxShowPending(notificationCtx);
 
     const body = JSON.stringify({ email: enteredEmail });
     const init: RequestInit = {
@@ -27,38 +28,12 @@ const NewsletterRegistration = (): JSX.Element => {
       },
     };
 
-    try {
-      await fetch("/api/newsletter", init)
-        .then((response) => response)
-        .catch((reason) => {
-          console.log("1:", reason);
-          return Promise.reject(reason);
-        })
-        .then((response) => {
-          if (response.ok) {
-            notificationCtx.showNotification({
-              title: "Success!",
-              message: "Successfully Registered for newsletter",
-              status: "success",
-            });
-            return response.json();
-          }
-          return response.json().then((data) => {
-            throw new Error(data.message || "something went wrong!");
-          });
-        })
-        .then((data) => console.log("client catch:", data))
-        .catch((reason) => {
-          console.log("2:", reason);
-          return Promise.reject(reason);
-        });
-    } catch (error) {
-      console.log("Error:", error);
-      notificationCtx.showNotification({
-        title: "Error!",
-        message: error.message || "something went wrong!",
-        status: "error",
-      });
+    const response = await fetch("/api/newsletter", init);
+    const data = await response.json();
+    if (response.ok) {
+      ntfCtxShowSuccess(notificationCtx);
+    } else {
+      ntfCtxShowError(notificationCtx, data);
     }
   };
 
