@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { mongoClient } from "../../../helpers/dbUtilities";
 
 type Success = {
   email: string;
@@ -10,6 +11,19 @@ type Failed = {
 };
 
 /**
+ * Use MongoClient input Email Address
+ * @param email - string - クライアントから取得したEmail Address
+ * @return Promise<void>
+ */
+const mongoMailInsert = async (email: string) => {
+  const client = await mongoClient();
+  const db = await client.db();
+  await db.collection("newsletter").insertOne({ email });
+  // .catch((error) => console.error(error));
+  await client.close();
+};
+
+/**
  * @desc newsletter設定のアドレスを登録する。
  * @param req
  * POST emailの確認を実施
@@ -17,7 +31,7 @@ type Failed = {
  * Failed時 message:string
  * @return null
  */
-const handler = (
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<Success | Failed>
 ) => {
@@ -28,6 +42,8 @@ const handler = (
       return;
     }
     console.log("server side:", userEmail);
+    await mongoMailInsert(userEmail);
+
     res.status(201).json({
       email: userEmail,
       message: "Success!",

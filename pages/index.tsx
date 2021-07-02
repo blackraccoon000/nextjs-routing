@@ -1,8 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
-import { getFeaturedEvents } from "../helpers/apiUtile";
+import { getFeaturedEvents } from "../helpers/apiUtilites";
 import EventList from "../components/events/EventList";
-import { Event } from "../helpers/apiUtile";
+import { Event } from "../helpers/apiUtilites";
 import { GetStaticProps } from "next";
 import NewsletterRegistration from "../components/input/NewsLetterRegistration";
 

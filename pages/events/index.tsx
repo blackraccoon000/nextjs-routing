@@ -3,7 +3,7 @@ import { GetStaticProps } from "next";
 import { NextRouter, useRouter } from "next/router";
 import Head from "next/head";
 
-import { getAllEvents, Event } from "../../helpers/apiUtile";
+import { getAllEvents, Event } from "../../helpers/apiUtilites";
 import EventList from "../../components/events/EventList";
 import EventsSearch from "../../components/events/EventsSearch";
 

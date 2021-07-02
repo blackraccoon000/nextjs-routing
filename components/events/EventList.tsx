@@ -1,6 +1,6 @@
 import EventItem from "./EventItem";
 import classes from "./EventList.module.css";
-import { Event } from "../../helpers/apiUtile";
+import { Event } from "../../helpers/apiUtilites";
 
 type Props = { events: Event[] };
 
