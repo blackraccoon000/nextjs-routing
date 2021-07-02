@@ -1,5 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { mongoClient } from "../../../helpers/dbUtilities";
+import {
+  connectDatabase,
+  getAllDocuments,
+  insertDocument,
+} from "../../../helpers/dbUtilities";
 
 type Success = {
   message: string;
@@ -10,65 +14,14 @@ type Failed = {
 };
 
 export type Input = {
+  _id: string;
   eventId: string;
   email: string;
   name: string;
   text: string;
 };
 
-export type Output =
-  | {
-      _id: string;
-      eventId: string;
-      email: string;
-      name: string;
-      text: string;
-    }[]
-  | undefined;
-
-type MongoResult = {
-  eventId: string;
-  name: string;
-  id: string;
-  text: string;
-  email: string;
-};
-
-/**
- * Use MongoClient input Comment
- * @param comment - Input - クライアントから取得したInput情報を送信
- * @return  Promise<MongoResult>
- */
-const mongoCommentInsert = async (comment: Input): Promise<MongoResult> => {
-  const client = await mongoClient();
-  const db = await client.db();
-  const result = await db.collection("comments").insertOne(comment);
-  await client.close();
-  return {
-    id: result.insertedId,
-    ...comment,
-  };
-};
-
-/**
- * Use MongoClient Get Comments
- * @return document - Promise<Output>
- */
-const mongoCommentFinder = async (): Promise<Output> => {
-  const client = await mongoClient();
-  const db = await client.db();
-  const document: Output = await db
-    .collection("comments")
-    .find() //
-    .sort({ _id: -1 }) //時系列順？
-    .toArray();
-  await client.close();
-  return document;
-  // return {
-  // 	id: result.insertedId,
-  // 	...comment,
-  // };
-};
+export type Output = Input[] | undefined;
 
 /**
  * @desc
@@ -79,14 +32,14 @@ const mongoCommentFinder = async (): Promise<Output> => {
  *
  * @param res HTTP Response
  * @param eventId eventPageのID
- * Type: Success | Failed | { comment: Comment }
+ * Type: Success | Failed | { comment: Input }
  * とある。
  *
  * @return Promise<void>
  */
 const createComment = async (
   req: NextApiRequest,
-  res: NextApiResponse<Success | Failed | { comment: MongoResult }>,
+  res: NextApiResponse<Success | Failed | { comment: Input }>,
   eventId: string
 ): Promise<void> => {
   const { email, name, text } = req.body;
@@ -104,16 +57,19 @@ const createComment = async (
   }
 
   const commentData: Input = {
+    _id: "",
     eventId,
     email,
     name,
     text,
   };
-  const newComment = await mongoCommentInsert(commentData);
+  const client = await connectDatabase();
+  await insertDocument(client, "comments", commentData);
+  await client.close();
 
   res.status(200).json({
     message: "Added comment.",
-    comment: newComment,
+    comment: commentData,
   });
 };
 
@@ -129,7 +85,7 @@ const createComment = async (
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<
-    Success | Failed | { comment: MongoResult } | { comments: Output }
+    Success | Failed | { comment: Input } | { comments: Output }
   >
 ): Promise<void> => {
   const eventId =
@@ -141,14 +97,22 @@ const handler = async (
   }
 
   if (req.method === "GET") {
-    const document = await mongoCommentFinder();
-    console.log(document);
-    // const dummyList: Output = [
-    //   { id: "1", name: "Y", text: "programing" },
-    //   { id: "2", name: "S", text: "work" },
-    //   { id: "3", name: "N", text: "study" },
-    // ];
-    res.status(200).json({ message: "success", comments: document });
+    try {
+      const client = await connectDatabase();
+      const document = await getAllDocuments(
+        client,
+        "comments",
+        { _id: -1 },
+        { eventId: eventId }
+      );
+      await client.close();
+      res.status(200).json({ message: "success", comments: document });
+    } catch (error) {
+      const { statusCode, message } = error;
+      console.error(error);
+      res.status(statusCode).json({ message });
+      return;
+    }
     return;
   }
 

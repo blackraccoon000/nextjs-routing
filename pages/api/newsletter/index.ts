@@ -1,26 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { mongoClient } from "../../../helpers/dbUtilities";
+import { connectDatabase, insertDocument } from "../../../helpers/dbUtilities";
 
 type Success = {
   email: string;
-  message: string;
 };
 
 type Failed = {
   message: string;
-};
-
-/**
- * Use MongoClient input Email Address
- * @param email - string - クライアントから取得したEmail Address
- * @return Promise<void>
- */
-const mongoMailInsert = async (email: string) => {
-  const client = await mongoClient();
-  const db = await client.db();
-  await db.collection("newsletter").insertOne({ email });
-  // .catch((error) => console.error(error));
-  await client.close();
 };
 
 /**
@@ -41,8 +27,17 @@ const handler = async (
       res.status(422).json({ message: "Invalid email address." });
       return;
     }
-    console.log("server side:", userEmail);
-    await mongoMailInsert(userEmail);
+
+    try {
+      const client = await connectDatabase();
+      await insertDocument(client, "newsletter", { email: userEmail });
+      await client.close();
+    } catch (error) {
+      const { statusCode, message } = error;
+      console.error(error);
+      res.status(statusCode).json({ message });
+      return;
+    }
 
     res.status(201).json({
       email: userEmail,
