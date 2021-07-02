@@ -1,5 +1,3 @@
-import { DummyEvent } from "../dummy-data";
-
 export type Event = {
   id: string;
   title: string;
