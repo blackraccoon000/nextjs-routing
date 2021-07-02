@@ -1,4 +1,4 @@
-import { Event } from "../../helpers/apiUtile";
+import { Event } from "../../helpers/apiUtilites";
 import EventList from "../../components/events/EventList";
 import { Fragment, useEffect, useState } from "react";
 import ResultsTitle from "../../components/events/ResultsTitle";

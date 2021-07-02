@@ -7,7 +7,7 @@ const CommentList = ({ comments }: { comments: Output }): JSX.Element => (
     {comments &&
       comments.map((comment) => {
         return (
-          <li key={comment.id}>
+          <li key={comment._id}>
             <p>{comment.text}</p>
             <div>
               By <address>{comment.name}</address>

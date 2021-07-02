@@ -1,4 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import {
+  connectDatabase,
+  getAllDocuments,
+  insertDocument,
+} from "../../../helpers/dbUtilities";
 
 type Success = {
   message: string;
@@ -9,36 +14,34 @@ type Failed = {
 };
 
 export type Input = {
-  id: string;
+  _id: string;
+  eventId: string;
   email: string;
   name: string;
   text: string;
 };
 
-export type Output =
-  | {
-      id: string;
-      name: string;
-      text: string;
-    }[]
-  | undefined;
+export type Output = Input[] | undefined;
 
 /**
  * @desc
- * コメントがデータベースに登録されてい良いか確認し、問題なければ返却する。
+ * コメントがデータベースに登録されてい良いか確認
+ * ついでにmongoDBにデータを追加する。
  * @param req HTTP Request
  * NextApiRequestのdefault
  *
  * @param res HTTP Response
- * Type: Success | Failed | { comment: Comment }
+ * @param eventId eventPageのID
+ * Type: Success | Failed | { comment: Input }
  * とある。
  *
- * @return void
+ * @return Promise<void>
  */
-const createComment = (
+const createComment = async (
   req: NextApiRequest,
-  res: NextApiResponse<Success | Failed | { comment: Input }>
-): void => {
+  res: NextApiResponse<Success | Failed | { comment: Input }>,
+  eventId: string
+): Promise<void> => {
   const { email, name, text } = req.body;
 
   const validate: boolean =
@@ -53,17 +56,20 @@ const createComment = (
     return;
   }
 
-  const newComment: Input = {
-    id: new Date().toISOString(),
+  const commentData: Input = {
+    _id: "",
+    eventId,
     email,
     name,
     text,
   };
-  console.log(newComment);
+  const client = await connectDatabase();
+  await insertDocument(client, "comments", commentData);
+  await client.close();
 
   res.status(200).json({
     message: "Added comment.",
-    comment: newComment,
+    comment: commentData,
   });
 };
 
@@ -76,27 +82,37 @@ const createComment = (
  * @param res NextApiResponse<Success | Failed | { comment: Comment } | { comments: Comment[] }>
  * @return void
  */
-const handler = (
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<
     Success | Failed | { comment: Input } | { comments: Output }
   >
-): void => {
-  const eventId = req.query.eventId;
-  console.log(eventId);
+): Promise<void> => {
+  const eventId =
+    typeof req.query.eventId === "string" ? req.query.eventId : "";
 
   if (req.method === "POST") {
-    createComment(req, res);
+    await createComment(req, res, eventId);
     return;
   }
 
   if (req.method === "GET") {
-    const dummyList: Output = [
-      { id: "1", name: "Y", text: "programing" },
-      { id: "2", name: "S", text: "work" },
-      { id: "3", name: "N", text: "study" },
-    ];
-    res.status(200).json({ message: "success", comments: dummyList });
+    try {
+      const client = await connectDatabase();
+      const document = await getAllDocuments(
+        client,
+        "comments",
+        { _id: -1 },
+        { eventId: eventId }
+      );
+      await client.close();
+      res.status(200).json({ message: "success", comments: document });
+    } catch (error) {
+      const { statusCode, message } = error;
+      console.error(error);
+      res.status(statusCode).json({ message });
+      return;
+    }
     return;
   }
 

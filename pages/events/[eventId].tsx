@@ -6,7 +6,11 @@ import EventLogistics from "../../components/event-detail/EventLogistics";
 import EventContent from "../../components/event-detail/EventContent";
 import Button from "../../components/ui/Button";
 import ErrorAlert from "../../components/ui/ErrorAlert";
-import { getEventById, Event, getFeaturedEvents } from "../../helpers/apiUtile";
+import {
+  getEventById,
+  Event,
+  getFeaturedEvents,
+} from "../../helpers/apiUtilites";
 import Comments from "../../components/input/Comments";
 
 type Props = {
