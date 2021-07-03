@@ -1,14 +1,27 @@
 import classes from "./NewsLetterRegistration.module.css";
-import { FormEventHandler, useRef } from "react";
+import { FormEventHandler, useContext, useRef } from "react";
+import NotificationContext from "../../store/NotificationContext";
+import {
+  errorNewsData,
+  ntfCtxShowError,
+  ntfCtxShowPending,
+  ntfCtxShowSuccess,
+  pendingNewsData,
+  successNewsData,
+} from "../../helpers/ctxUtilites";
 
 const NewsletterRegistration = (): JSX.Element => {
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const notificationCtx = useContext(NotificationContext);
 
   const registrationHandler: FormEventHandler<HTMLFormElement> = async (
     event
   ) => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current?.value;
+
+    ntfCtxShowPending(notificationCtx, pendingNewsData);
+
     const body = JSON.stringify({ email: enteredEmail });
     const init: RequestInit = {
       method: "POST",
@@ -17,9 +30,15 @@ const NewsletterRegistration = (): JSX.Element => {
         "Content-Type": "application/json",
       },
     };
+
     const response = await fetch("/api/newsletter", init);
     const data = await response.json();
-    console.log("client catch:", data);
+
+    if (response.ok) {
+      ntfCtxShowSuccess(notificationCtx, successNewsData);
+    } else {
+      ntfCtxShowError(notificationCtx, errorNewsData(data));
+    }
   };
 
   return (

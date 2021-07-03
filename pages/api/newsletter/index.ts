@@ -34,7 +34,7 @@ const handler = async (
       await client.close();
     } catch (error) {
       const { statusCode, message } = error;
-      console.error(error);
+      console.error("e:", error);
       res.status(statusCode).json({ message });
       return;
     }
