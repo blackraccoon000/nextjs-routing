@@ -5,9 +5,12 @@ import NewComment from "./NewComment";
 import classes from "./Comments.module.css";
 import { Output } from "../../pages/api/comments/[eventId]";
 import {
+  errorCommentData,
   ntfCtxShowError,
   ntfCtxShowPending,
   ntfCtxShowSuccess,
+  pendingCommentData,
+  successCommentData,
 } from "../../helpers/ctxUtilites";
 import NotificationContext from "../../store/NotificationContext";
 
@@ -20,14 +23,19 @@ export type CommentData = {
 const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
   const [showComments, setShowComments] = useState(false);
   const [reloadComments, setReloadComments] = useState(false);
+  const [isFetchingComments, setIsFetchingComments] = useState(false);
   const [comments, setComments] = useState<Output | undefined>();
   const notificationCtx = useContext(NotificationContext);
 
   useEffect(() => {
     if (showComments) {
+      setIsFetchingComments(true);
       fetch(`/api/comments/${eventId}`)
         .then((res) => res.json())
-        .then((data) => setComments(data.comments));
+        .then((data) => {
+          setComments(data.comments);
+          setIsFetchingComments(false);
+        });
     }
   }, [showComments]);
 
@@ -44,11 +52,6 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
 
   const toggleCommentsHandler = () => {
     setShowComments((prevStatus) => !prevStatus);
-    if (!showComments) {
-      /**
-       * ここってやりかけ？
-       */
-    }
   };
 
   /**
@@ -56,7 +59,7 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
    * @param commentData
    */
   const addCommentHandler = async (commentData: CommentData): Promise<void> => {
-    ntfCtxShowPending(notificationCtx);
+    ntfCtxShowPending(notificationCtx, pendingCommentData);
     console.log(commentData);
     // send data to API
     const init: RequestInit = {
@@ -66,21 +69,19 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
         "Content-Type": "application/json",
       },
     };
-    /**
-     * エラーメッセージなどは後で修正
-     */
-    try {
-      const response = await fetch(`/api/comments/${eventId}`, init);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data);
-      } else {
-        setReloadComments(true);
-        ntfCtxShowSuccess(notificationCtx);
-      }
-    } catch (e) {
-      console.error(e);
-      ntfCtxShowError(notificationCtx, e);
+
+    const response = await fetch(`/api/comments/${eventId}`, init);
+    await response.json().catch(() => {
+      ntfCtxShowError(
+        notificationCtx,
+        errorCommentData({ message: "server side error" })
+      );
+    });
+    if (response.ok) {
+      setReloadComments(true);
+      ntfCtxShowSuccess(notificationCtx, successCommentData);
+    } else {
+      ntfCtxShowError(notificationCtx, errorCommentData());
     }
   };
 
@@ -90,7 +91,10 @@ const Comments = ({ eventId }: { eventId: string }): JSX.Element => {
         {showComments ? "Hide" : "Show"} Comments
       </button>
       {showComments && <NewComment onAddComment={addCommentHandler} />}
-      {showComments && <CommentList comments={comments} />}
+      {showComments && !isFetchingComments && (
+        <CommentList comments={comments} />
+      )}
+      {showComments && isFetchingComments && <p>Loading...</p>}
     </section>
   );
 };

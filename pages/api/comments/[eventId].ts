@@ -63,9 +63,6 @@ const createComment = async (
     text,
   };
   const client = await connectDatabase();
-  /**
-   * commentDataにidが勝手に入ってしまうため、InputTypeがよくわからないことになる。
-   */
   await insertDocument(client, "comments", commentData);
   await client.close();
 

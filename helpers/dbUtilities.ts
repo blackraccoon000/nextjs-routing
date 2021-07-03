@@ -52,7 +52,7 @@ export const insertDocument = async (
     .catch((reason) =>
       Promise.reject({
         statusCode: 500,
-        message: `API-Comment:Insert data failed. MongoDB-Comment:${reason}`,
+        message: `API Error:${reason}`,
       })
     );
 };

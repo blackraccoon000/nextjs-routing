@@ -2,9 +2,12 @@ import classes from "./NewsLetterRegistration.module.css";
 import { FormEventHandler, useContext, useRef } from "react";
 import NotificationContext from "../../store/NotificationContext";
 import {
+  errorNewsData,
   ntfCtxShowError,
   ntfCtxShowPending,
   ntfCtxShowSuccess,
+  pendingNewsData,
+  successNewsData,
 } from "../../helpers/ctxUtilites";
 
 const NewsletterRegistration = (): JSX.Element => {
@@ -17,7 +20,7 @@ const NewsletterRegistration = (): JSX.Element => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current?.value;
 
-    ntfCtxShowPending(notificationCtx);
+    ntfCtxShowPending(notificationCtx, pendingNewsData);
 
     const body = JSON.stringify({ email: enteredEmail });
     const init: RequestInit = {
@@ -30,10 +33,11 @@ const NewsletterRegistration = (): JSX.Element => {
 
     const response = await fetch("/api/newsletter", init);
     const data = await response.json();
+
     if (response.ok) {
-      ntfCtxShowSuccess(notificationCtx);
+      ntfCtxShowSuccess(notificationCtx, successNewsData);
     } else {
-      ntfCtxShowError(notificationCtx, data);
+      ntfCtxShowError(notificationCtx, errorNewsData(data));
     }
   };
 
