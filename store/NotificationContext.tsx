@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, useState } from "react";
 
 export type Context = {
-  notification: null;
-  showNotification: (notificationData: any) => void;
+  notification: null | NotificationData;
+  showNotification: (notificationData: NotificationData) => void;
   hideNotification: () => void;
 };
 
@@ -12,7 +12,7 @@ export type NotificationData = {
   status: string;
 };
 
-const NotificationContext: React.Context<Context> = createContext({
+const NotificationContext: React.Context<Context> = createContext<Context>({
   notification: null,
   showNotification: (notificationData: NotificationData) => {
     console.log(notificationData); // Unused回避
@@ -25,7 +25,8 @@ export const NotificationContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [activeNotification, setActiveNotification] = useState<any>(null);
+  const [activeNotification, setActiveNotification] =
+    useState<null | NotificationData>(null);
   useEffect(() => {
     if (
       activeNotification &&
@@ -41,7 +42,7 @@ export const NotificationContextProvider = ({
     }
   }, [activeNotification]);
 
-  const showNotificationHandler = (notificationData: any) => {
+  const showNotificationHandler = (notificationData: NotificationData) => {
     setActiveNotification(notificationData);
   };
   const hideNotificationHandler = () => {
